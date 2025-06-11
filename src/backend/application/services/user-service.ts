@@ -1,10 +1,10 @@
-import type { 
+import type {
   AuthenticateUserInput,
   ChangePasswordInput,
-  CreateUserInput, 
-  UpdateUserInput, 
+  CreateUserInput,
+  UpdateUserInput,
   User,
-  UserSearchCriteria
+  UserSearchCriteria,
 } from '../../domain/types/user'
 import type { Either } from '../../domain/types/base'
 import type { DomainError } from '../../domain/errors'
@@ -15,7 +15,7 @@ import {
   createUserWorkflow,
   getSubordinatesWorkflow,
   getUserWorkflow,
-  updateUserWorkflow
+  updateUserWorkflow,
 } from '../../domain/workflows/user-workflow'
 
 export class UserService {
@@ -53,7 +53,7 @@ export class UserService {
   async searchUsers(criteria: UserSearchCriteria): Promise<User[]> {
     const users = await this.userRepo.search(criteria)
     // パスワードを除外
-    return users.map(user => {
+    return users.map((user) => {
       const { password: _, ...userWithoutPassword } = user
       return userWithoutPassword as User
     })

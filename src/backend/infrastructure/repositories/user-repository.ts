@@ -16,7 +16,7 @@ const toDomainUser = (prismaUser: any): User => {
     isActive: prismaUser.isActive,
     slackUserId: prismaUser.slackUserId || undefined,
     createdAt: prismaUser.createdAt,
-    updatedAt: prismaUser.updatedAt
+    updatedAt: prismaUser.updatedAt,
   }
 }
 
@@ -33,7 +33,7 @@ const toPrismaData = (user: User): any => {
     isActive: user.isActive,
     slackUserId: user.slackUserId || null,
     createdAt: user.createdAt,
-    updatedAt: user.updatedAt
+    updatedAt: user.updatedAt,
   }
 }
 
@@ -42,21 +42,21 @@ export class PrismaUserRepository implements UserRepository {
 
   async findById(id: string): Promise<User | null> {
     const user = await this.prisma.user.findUnique({
-      where: { id }
+      where: { id },
     })
     return user ? toDomainUser(user) : null
   }
 
   async findByEmail(email: string): Promise<User | null> {
     const user = await this.prisma.user.findUnique({
-      where: { email }
+      where: { email },
     })
     return user ? toDomainUser(user) : null
   }
 
   async create(user: User): Promise<User> {
     const created = await this.prisma.user.create({
-      data: toPrismaData(user)
+      data: toPrismaData(user),
     })
     return toDomainUser(created)
   }
@@ -64,7 +64,7 @@ export class PrismaUserRepository implements UserRepository {
   async update(user: User): Promise<User> {
     const updated = await this.prisma.user.update({
       where: { id: user.id },
-      data: toPrismaData(user)
+      data: toPrismaData(user),
     })
     return toDomainUser(updated)
   }
@@ -93,7 +93,7 @@ export class PrismaUserRepository implements UserRepository {
 
     const users = await this.prisma.user.findMany({
       where,
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     })
 
     return users.map(toDomainUser)
@@ -101,11 +101,11 @@ export class PrismaUserRepository implements UserRepository {
 
   async findSubordinates(managerId: string): Promise<User[]> {
     const users = await this.prisma.user.findMany({
-      where: { 
+      where: {
         managerId,
-        isActive: true
+        isActive: true,
       },
-      orderBy: { name: 'asc' }
+      orderBy: { name: 'asc' },
     })
 
     return users.map(toDomainUser)

@@ -1,4 +1,4 @@
-import type { 
+import type {
   ApproveDailyReportInput,
   CreateCommentInput,
   CreateDailyReportInput,
@@ -8,15 +8,15 @@ import type {
   RejectDailyReportInput,
   SubmitDailyReportInput,
   UpdateDailyReportInput,
-  Comment
+  Comment,
 } from '../../domain/types/daily-report'
 import type { Either, UserId } from '../../domain/types/base'
 import type { DomainError } from '../../domain/errors'
-import type { 
+import type {
   DailyReportRepository,
   CommentRepository,
   UserRepository,
-  ProjectRepository
+  ProjectRepository,
 } from '../../domain/workflows/daily-report-workflow'
 import {
   approveDailyReportWorkflow,
@@ -26,7 +26,7 @@ import {
   rejectDailyReportWorkflow,
   searchDailyReportsWorkflow,
   submitDailyReportWorkflow,
-  updateDailyReportWorkflow
+  updateDailyReportWorkflow,
 } from '../../domain/workflows/daily-report-workflow'
 
 export class DailyReportService {
@@ -38,50 +38,43 @@ export class DailyReportService {
   ) {}
 
   // 日報作成
-  async createDailyReport(input: CreateDailyReportInput): Promise<Either<DomainError, DailyReport>> {
-    return createDailyReportWorkflow(
-      this.reportRepo,
-      this.userRepo,
-      this.projectRepo
-    )(input)
+  async createDailyReport(
+    input: CreateDailyReportInput
+  ): Promise<Either<DomainError, DailyReport>> {
+    return createDailyReportWorkflow(this.reportRepo, this.userRepo, this.projectRepo)(input)
   }
 
   // 日報更新
-  async updateDailyReport(input: UpdateDailyReportInput): Promise<Either<DomainError, DailyReport>> {
-    return updateDailyReportWorkflow(
-      this.reportRepo,
-      this.projectRepo
-    )(input)
+  async updateDailyReport(
+    input: UpdateDailyReportInput
+  ): Promise<Either<DomainError, DailyReport>> {
+    return updateDailyReportWorkflow(this.reportRepo, this.projectRepo)(input)
   }
 
   // 日報提出
-  async submitDailyReport(input: SubmitDailyReportInput): Promise<Either<DomainError, DailyReport>> {
+  async submitDailyReport(
+    input: SubmitDailyReportInput
+  ): Promise<Either<DomainError, DailyReport>> {
     return submitDailyReportWorkflow(this.reportRepo)(input)
   }
 
   // 日報承認
-  async approveDailyReport(input: ApproveDailyReportInput): Promise<Either<DomainError, DailyReport>> {
-    return approveDailyReportWorkflow(
-      this.reportRepo,
-      this.userRepo
-    )(input)
+  async approveDailyReport(
+    input: ApproveDailyReportInput
+  ): Promise<Either<DomainError, DailyReport>> {
+    return approveDailyReportWorkflow(this.reportRepo, this.userRepo)(input)
   }
 
   // 日報差し戻し
-  async rejectDailyReport(input: RejectDailyReportInput): Promise<Either<DomainError, DailyReport>> {
-    return rejectDailyReportWorkflow(
-      this.reportRepo,
-      this.userRepo
-    )(input)
+  async rejectDailyReport(
+    input: RejectDailyReportInput
+  ): Promise<Either<DomainError, DailyReport>> {
+    return rejectDailyReportWorkflow(this.reportRepo, this.userRepo)(input)
   }
 
   // コメント作成
   async createComment(input: CreateCommentInput): Promise<Either<DomainError, Comment>> {
-    return createCommentWorkflow(
-      this.reportRepo,
-      this.userRepo,
-      this.commentRepo
-    )(input)
+    return createCommentWorkflow(this.reportRepo, this.userRepo, this.commentRepo)(input)
   }
 
   // 日報検索
@@ -89,10 +82,7 @@ export class DailyReportService {
     searcherId: UserId,
     criteria: DailyReportSearchCriteria
   ): Promise<Either<DomainError, DailyReport[]>> {
-    return searchDailyReportsWorkflow(
-      this.reportRepo,
-      this.userRepo
-    )(searcherId, criteria)
+    return searchDailyReportsWorkflow(this.reportRepo, this.userRepo)(searcherId, criteria)
   }
 
   // 日報集計
@@ -102,10 +92,12 @@ export class DailyReportService {
     dateFrom: Date,
     dateTo: Date
   ): Promise<Either<DomainError, DailyReportSummary>> {
-    return getDailyReportSummaryWorkflow(
-      this.reportRepo,
-      this.userRepo
-    )(requesterId, targetUserId, dateFrom, dateTo)
+    return getDailyReportSummaryWorkflow(this.reportRepo, this.userRepo)(
+      requesterId,
+      targetUserId,
+      dateFrom,
+      dateTo
+    )
   }
 
   // 日報取得（IDによる）

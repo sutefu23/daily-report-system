@@ -51,10 +51,10 @@ export type ProjectSearchCriteria = {
 // プロジェクト期間チェック
 export const isProjectActive = (project: Project, date: Date = new Date()): boolean => {
   if (!project.isActive || project.status !== 'active') return false
-  
+
   const isAfterStart = date >= project.startDate
   const isBeforeEnd = !project.endDate || date <= project.endDate
-  
+
   return isAfterStart && isBeforeEnd
 }
 

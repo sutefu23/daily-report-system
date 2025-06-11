@@ -9,20 +9,17 @@ import { domainErrorToHttpStatus, toErrorResponse } from '../domain/errors'
 // リクエストスキーマ
 const loginSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(1)
+  password: z.string().min(1),
 })
 
 const registerSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
   name: z.string().min(1),
-  departmentId: z.string().min(1)
+  departmentId: z.string().min(1),
 })
 
-export const createAuthRoutes = (
-  userService: UserService,
-  tokenGenerator: JwtTokenGenerator
-) => {
+export const createAuthRoutes = (userService: UserService, tokenGenerator: JwtTokenGenerator) => {
   const app = new Hono()
 
   // ログイン
@@ -33,10 +30,7 @@ export const createAuthRoutes = (
 
     if (!isRight(result)) {
       const error = result.left
-      return c.json(
-        toErrorResponse(error),
-        domainErrorToHttpStatus(error)
-      )
+      return c.json(toErrorResponse(error), domainErrorToHttpStatus(error))
     }
 
     const user = result.right
@@ -49,10 +43,10 @@ export const createAuthRoutes = (
         email: user.email,
         name: user.name,
         role: user.role,
-        departmentId: user.departmentId
+        departmentId: user.departmentId,
       },
       token,
-      refreshToken
+      refreshToken,
     })
   })
 
@@ -62,32 +56,32 @@ export const createAuthRoutes = (
 
     const result = await userService.createUser({
       ...input,
-      role: 'employee' // デフォルトは一般社員
+      role: 'employee', // デフォルトは一般社員
     })
 
     if (!isRight(result)) {
       const error = result.left
-      return c.json(
-        toErrorResponse(error),
-        domainErrorToHttpStatus(error)
-      )
+      return c.json(toErrorResponse(error), domainErrorToHttpStatus(error))
     }
 
     const user = result.right
     const token = tokenGenerator.generateToken(user)
     const refreshToken = tokenGenerator.generateRefreshToken(user)
 
-    return c.json({
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role,
-        departmentId: user.departmentId
+    return c.json(
+      {
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          departmentId: user.departmentId,
+        },
+        token,
+        refreshToken,
       },
-      token,
-      refreshToken
-    }, 201)
+      201
+    )
   })
 
   // トークンリフレッシュ
@@ -116,9 +110,9 @@ export const createAuthRoutes = (
 
       return c.json({
         token: newToken,
-        refreshToken: newRefreshToken
+        refreshToken: newRefreshToken,
       })
-    } catch (error) {
+    } catch (_error) {
       return c.json({ error: { message: 'Invalid refresh token' } }, 401)
     }
   })

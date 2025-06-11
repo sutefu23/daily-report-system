@@ -1,15 +1,3 @@
--- CreateEnum
-CREATE TYPE "UserRole" AS ENUM ('ADMIN', 'MANAGER', 'EMPLOYEE');
-
--- CreateEnum
-CREATE TYPE "ProjectStatus" AS ENUM ('PLANNING', 'ACTIVE', 'COMPLETED', 'SUSPENDED', 'CANCELLED');
-
--- CreateEnum
-CREATE TYPE "DailyReportStatus" AS ENUM ('DRAFT', 'SUBMITTED', 'APPROVED', 'REJECTED');
-
--- CreateEnum
-CREATE TYPE "NotificationType" AS ENUM ('REPORT_SUBMITTED', 'REPORT_APPROVED', 'REPORT_REJECTED', 'COMMENT_ADDED');
-
 -- CreateTable
 CREATE TABLE "users" (
     "id" VARCHAR(26) NOT NULL,
@@ -17,7 +5,7 @@ CREATE TABLE "users" (
     "username" VARCHAR(50) NOT NULL,
     "password_hash" VARCHAR(255) NOT NULL,
     "name" VARCHAR(100) NOT NULL,
-    "role" "UserRole" NOT NULL DEFAULT 'EMPLOYEE',
+    "role" VARCHAR(20) NOT NULL,
     "department_id" VARCHAR(26) NOT NULL,
     "manager_id" VARCHAR(26),
     "slack_user_id" VARCHAR(50),
@@ -46,7 +34,7 @@ CREATE TABLE "projects" (
     "name" VARCHAR(200) NOT NULL,
     "description" TEXT,
     "department_id" VARCHAR(26) NOT NULL,
-    "status" "ProjectStatus" NOT NULL DEFAULT 'PLANNING',
+    "status" VARCHAR(20) NOT NULL,
     "start_date" DATE NOT NULL,
     "end_date" DATE,
     "is_active" BOOLEAN NOT NULL DEFAULT true,
@@ -61,9 +49,9 @@ CREATE TABLE "daily_reports" (
     "id" VARCHAR(26) NOT NULL,
     "user_id" VARCHAR(26) NOT NULL,
     "date" DATE NOT NULL,
-    "challenges" TEXT,
-    "next_day_plan" TEXT,
-    "status" "DailyReportStatus" NOT NULL DEFAULT 'DRAFT',
+    "challenges" TEXT NOT NULL,
+    "next_day_plan" TEXT NOT NULL,
+    "status" VARCHAR(20) NOT NULL,
     "submitted_at" TIMESTAMP(3),
     "approved_at" TIMESTAMP(3),
     "approved_by" VARCHAR(26),
@@ -107,7 +95,7 @@ CREATE TABLE "comments" (
 CREATE TABLE "notifications" (
     "id" VARCHAR(26) NOT NULL,
     "user_id" VARCHAR(26) NOT NULL,
-    "type" "NotificationType" NOT NULL,
+    "type" VARCHAR(50) NOT NULL,
     "title" VARCHAR(200) NOT NULL,
     "message" TEXT NOT NULL,
     "related_entity_id" VARCHAR(26),

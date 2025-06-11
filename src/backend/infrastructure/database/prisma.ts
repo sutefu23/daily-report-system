@@ -6,9 +6,7 @@ let prisma: PrismaClient | undefined
 export const getPrismaClient = (): PrismaClient => {
   if (!prisma) {
     prisma = new PrismaClient({
-      log: process.env.NODE_ENV === 'development' 
-        ? ['query', 'info', 'warn', 'error']
-        : ['error'],
+      log: process.env.NODE_ENV === 'development' ? ['query', 'info', 'warn', 'error'] : ['error'],
     })
   }
   return prisma
@@ -23,7 +21,9 @@ export const disconnectPrisma = async (): Promise<void> => {
 }
 
 // Prismaのエラーハンドリングユーティリティ
-export const isPrismaError = (error: unknown): error is { code: string; meta?: { target?: string[] } } => {
+export const isPrismaError = (
+  error: unknown
+): error is { code: string; meta?: { target?: string[] } } => {
   return (
     typeof error === 'object' &&
     error !== null &&

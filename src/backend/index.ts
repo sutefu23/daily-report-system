@@ -24,12 +24,16 @@ const app = new Hono()
 
 // ミドルウェア
 app.use('*', logger())
-app.use('*', cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? process.env.FRONTEND_URL || 'http://localhost:3000'
-    : 'http://localhost:3000',
-  credentials: true,
-}))
+app.use(
+  '*',
+  cors({
+    origin:
+      process.env.NODE_ENV === 'production'
+        ? process.env.FRONTEND_URL || 'http://localhost:3000'
+        : 'http://localhost:3000',
+    credentials: true,
+  })
+)
 
 // 依存関係の初期化
 const prisma = getPrismaClient()
@@ -62,18 +66,12 @@ app.route('/api/daily-reports', createDailyReportRoutes(dailyReportService))
 // エラーハンドリング
 app.onError((err, c) => {
   console.error(`${err}`)
-  return c.json(
-    { error: { message: 'Internal Server Error' } },
-    500
-  )
+  return c.json({ error: { message: 'Internal Server Error' } }, 500)
 })
 
 // 404ハンドリング
 app.notFound((c) => {
-  return c.json(
-    { error: { message: 'Not Found' } },
-    404
-  )
+  return c.json({ error: { message: 'Not Found' } }, 404)
 })
 
 // サーバー起動

@@ -71,7 +71,7 @@ export const canManageUsers = (user: User): boolean => {
   return user.role === 'admin'
 }
 
-export const canApproveDailyReport = (user: User, reportUserId: UserId): boolean => {
+export const canApproveDailyReport = (user: User, _reportUserId: UserId): boolean => {
   if (user.role === 'admin') return true
   if (user.role === 'manager') {
     // TODO: 部下の日報のみ承認可能にする場合はここでチェック
@@ -87,7 +87,7 @@ export const isStrongPassword = (password: string): boolean => {
   const hasUpperCase = /[A-Z]/.test(password)
   const hasLowerCase = /[a-z]/.test(password)
   const hasNumber = /\d/.test(password)
-  
+
   return minLength && hasUpperCase && hasLowerCase && hasNumber
 }
 

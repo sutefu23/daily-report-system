@@ -2,10 +2,7 @@
   "name": "daily-report-system",
   "version": "1.0.0",
   "private": true,
-  "workspaces": [
-    "src/front",
-    "src/backend"
-  ],
+  "workspaces": ["src/front", "src/backend"],
   "scripts": {
     "dev": "npm run dev:front",
     "dev:front": "npm run dev --workspace=@daily-report/frontend",
@@ -15,10 +12,25 @@
     "build:backend": "npm run build --workspace=@daily-report/backend",
     "install:all": "npm install",
     "db:setup": "npx prisma migrate dev",
-    "db:generate": "npx prisma generate"
+    "db:generate": "npx prisma generate",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:reset": "npx prisma migrate reset",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "check": "biome check --write .",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
     "@prisma/client": "^6.9.0",
-    "prisma": "^6.9.0"
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^24.0.0",
+    "bcryptjs": "^3.0.2",
+    "prisma": "^6.9.0",
+    "tsx": "^4.20.1"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }

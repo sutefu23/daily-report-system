@@ -1,21 +1,30 @@
-"use client"
+'use client'
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { format } from "date-fns"
-import { ja } from "date-fns/locale"
-import { Plus, ChevronRight, Calendar, Clock, FileText } from "lucide-react"
-import { Button } from "@/components/shadcn/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/shadcn/ui/card"
-import { Badge } from "@/components/shadcn/ui/badge"
-import { apiClient } from "@/lib/api-client"
-import type { DailyReport, DailyReportStatus } from "@/types/daily-report"
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { format } from 'date-fns'
+import { ja } from 'date-fns/locale'
+import { Plus, ChevronRight, Calendar, Clock, FileText } from 'lucide-react'
+import { Button } from '@/components/shadcn/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/shadcn/ui/card'
+import { Badge } from '@/components/shadcn/ui/badge'
+import { apiClient } from '@/lib/api-client'
+import type { DailyReport, DailyReportStatus } from '@/types/daily-report'
 
-const statusConfig: Record<DailyReportStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-  draft: { label: "下書き", variant: "secondary" },
-  submitted: { label: "提出済み", variant: "default" },
-  approved: { label: "承認済み", variant: "outline" },
-  rejected: { label: "差し戻し", variant: "destructive" },
+const statusConfig: Record<
+  DailyReportStatus,
+  { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }
+> = {
+  draft: { label: '下書き', variant: 'secondary' },
+  submitted: { label: '提出済み', variant: 'default' },
+  approved: { label: '承認済み', variant: 'outline' },
+  rejected: { label: '差し戻し', variant: 'destructive' },
 }
 
 export function DailyReportList() {
@@ -30,17 +39,17 @@ export function DailyReportList() {
 
   const fetchReports = async () => {
     try {
-      const data = await apiClient.get<DailyReport[]>("/daily-reports")
+      const data = await apiClient.get<DailyReport[]>('/daily-reports')
       setReports(data)
     } catch (err: any) {
-      setError(err.response?.data?.message || "日報の取得に失敗しました")
+      setError(err.response?.data?.message || '日報の取得に失敗しました')
     } finally {
       setIsLoading(false)
     }
   }
 
   const handleCreateNew = () => {
-    router.push("/dashboard/daily-reports/new")
+    router.push('/dashboard/daily-reports/new')
   }
 
   const handleReportClick = (reportId: string) => {
@@ -68,9 +77,7 @@ export function DailyReportList() {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">日報一覧</h2>
-          <p className="text-muted-foreground">
-            これまでに作成した日報を確認できます
-          </p>
+          <p className="text-muted-foreground">これまでに作成した日報を確認できます</p>
         </div>
         <Button onClick={handleCreateNew}>
           <Plus className="mr-2 h-4 w-4" />
@@ -84,9 +91,7 @@ export function DailyReportList() {
             <FileText className="h-12 w-12 text-muted-foreground mx-auto" />
             <div>
               <p className="text-lg font-medium">日報がありません</p>
-              <p className="text-sm text-muted-foreground">
-                最初の日報を作成してみましょう
-              </p>
+              <p className="text-sm text-muted-foreground">最初の日報を作成してみましょう</p>
             </div>
             <Button onClick={handleCreateNew}>
               <Plus className="mr-2 h-4 w-4" />
@@ -110,12 +115,12 @@ export function DailyReportList() {
                   <div className="flex justify-between items-start">
                     <div className="space-y-1">
                       <CardTitle className="text-base">
-                        {format(new Date(report.date), "yyyy年MM月dd日（E）", { locale: ja })}
+                        {format(new Date(report.date), 'yyyy年MM月dd日（E）', { locale: ja })}
                       </CardTitle>
                       <CardDescription className="flex items-center gap-4">
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
-                          {format(new Date(report.createdAt), "MM/dd HH:mm")}
+                          {format(new Date(report.createdAt), 'MM/dd HH:mm')}
                         </span>
                         <span className="flex items-center gap-1">
                           <Clock className="h-3 w-3" />
@@ -124,9 +129,7 @@ export function DailyReportList() {
                       </CardDescription>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge variant={statusInfo.variant}>
-                        {statusInfo.label}
-                      </Badge>
+                      <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>
                       <ChevronRight className="h-4 w-4 text-muted-foreground" />
                     </div>
                   </div>
@@ -138,7 +141,7 @@ export function DailyReportList() {
                       <ul className="list-disc list-inside space-y-1 mt-1">
                         {report.tasks.slice(0, 2).map((task, index) => (
                           <li key={index} className="text-sm line-clamp-1">
-                            {task.projectName || "プロジェクト"}: {task.description}
+                            {task.projectName || 'プロジェクト'}: {task.description}
                           </li>
                         ))}
                         {report.tasks.length > 2 && (

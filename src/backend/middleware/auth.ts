@@ -17,48 +17,46 @@ export type AuthVariables = {
 }
 
 // JWT認証ミドルウェア
-export const createAuthMiddleware = (
-  tokenGenerator: JwtTokenGenerator,
-  userService: UserService
-) => createMiddleware<{ Variables: AuthVariables }>(async (c, next) => {
-  try {
-    // Authorizationヘッダーからトークンを取得
-    const authHeader = c.req.header('Authorization')
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+export const createAuthMiddleware = (tokenGenerator: JwtTokenGenerator, userService: UserService) =>
+  createMiddleware<{ Variables: AuthVariables }>(async (c, next) => {
+    try {
+      // Authorizationヘッダーからトークンを取得
+      const authHeader = c.req.header('Authorization')
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return c.json({ error: { message: 'Unauthorized' } }, 401)
+      }
+
+      const token = authHeader.substring(7)
+
+      // トークンの検証
+      const payload = tokenGenerator.verifyToken(token)
+
+      // ユーザーの存在確認とアクティブチェック
+      const userResult = await userService.getUser(payload.sub)
+      if (!isRight(userResult)) {
+        return c.json({ error: { message: 'Unauthorized' } }, 401)
+      }
+
+      const user = userResult.right
+      if (!user.isActive) {
+        return c.json({ error: { message: 'Account is deactivated' } }, 403)
+      }
+
+      // 認証情報をコンテキストに設定
+      c.set('user', {
+        userId: user.id,
+        email: user.email,
+        role: user.role,
+      })
+
+      await next()
+    } catch (_error) {
       return c.json({ error: { message: 'Unauthorized' } }, 401)
     }
-
-    const token = authHeader.substring(7)
-    
-    // トークンの検証
-    const payload = tokenGenerator.verifyToken(token)
-    
-    // ユーザーの存在確認とアクティブチェック
-    const userResult = await userService.getUser(payload.sub)
-    if (!isRight(userResult)) {
-      return c.json({ error: { message: 'Unauthorized' } }, 401)
-    }
-
-    const user = userResult.right
-    if (!user.isActive) {
-      return c.json({ error: { message: 'Account is deactivated' } }, 403)
-    }
-
-    // 認証情報をコンテキストに設定
-    c.set('user', {
-      userId: user.id,
-      email: user.email,
-      role: user.role
-    })
-
-    await next()
-  } catch (error) {
-    return c.json({ error: { message: 'Unauthorized' } }, 401)
-  }
-})
+  })
 
 // ロールベースの認可ミドルウェア
-export const requireRole = (allowedRoles: string[]) => 
+export const requireRole = (allowedRoles: string[]) =>
   createMiddleware<{ Variables: AuthVariables }>(async (c, next) => {
     const user = c.get('user')
     if (!user || !allowedRoles.includes(user.role)) {

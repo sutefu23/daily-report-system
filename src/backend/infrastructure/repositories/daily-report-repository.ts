@@ -1,26 +1,26 @@
 import type { PrismaClient } from '@prisma/client'
-import type { 
-  DailyReport, 
-  DailyReportSearchCriteria, 
+import type {
+  DailyReport,
+  DailyReportSearchCriteria,
   DailyReportSummary,
-  TaskProgress 
+  TaskProgress,
 } from '../../domain/types/daily-report'
 import type { DailyReportRepository } from '../../domain/workflows/daily-report-workflow'
-import { 
-  createDailyReportId, 
-  createProjectId, 
-  createTaskId, 
-  createUserId 
+import {
+  createDailyReportId,
+  createProjectId,
+  createTaskId,
+  createUserId,
 } from '../../domain/types/base'
 
 // PrismaのDailyReport型からドメインのDailyReport型への変換
 const toDomainDailyReport = (prismaReport: any, tasks: any[]): DailyReport => {
-  const domainTasks: TaskProgress[] = tasks.map(task => ({
+  const domainTasks: TaskProgress[] = tasks.map((task) => ({
     id: createTaskId(task.id),
     projectId: createProjectId(task.projectId),
     description: task.description,
     hoursSpent: task.hoursSpent,
-    progress: task.progress
+    progress: task.progress,
   }))
 
   return {
@@ -38,7 +38,7 @@ const toDomainDailyReport = (prismaReport: any, tasks: any[]): DailyReport => {
     rejectedBy: prismaReport.rejectedBy ? createUserId(prismaReport.rejectedBy) : undefined,
     feedback: prismaReport.feedback || undefined,
     createdAt: prismaReport.createdAt,
-    updatedAt: prismaReport.updatedAt
+    updatedAt: prismaReport.updatedAt,
   }
 }
 
@@ -48,7 +48,7 @@ export class PrismaDailyReportRepository implements DailyReportRepository {
   async findById(id: string): Promise<DailyReport | null> {
     const report = await this.prisma.dailyReport.findUnique({
       where: { id },
-      include: { tasks: true }
+      include: { tasks: true },
     })
 
     if (!report) return null
@@ -59,7 +59,7 @@ export class PrismaDailyReportRepository implements DailyReportRepository {
     // 日付の開始と終了を計算（その日の0:00:00から23:59:59）
     const startOfDay = new Date(date)
     startOfDay.setHours(0, 0, 0, 0)
-    
+
     const endOfDay = new Date(date)
     endOfDay.setHours(23, 59, 59, 999)
 
@@ -68,10 +68,10 @@ export class PrismaDailyReportRepository implements DailyReportRepository {
         userId,
         date: {
           gte: startOfDay,
-          lte: endOfDay
-        }
+          lte: endOfDay,
+        },
       },
-      include: { tasks: true }
+      include: { tasks: true },
     })
 
     if (!report) return null
@@ -90,16 +90,16 @@ export class PrismaDailyReportRepository implements DailyReportRepository {
         createdAt: report.createdAt,
         updatedAt: report.updatedAt,
         tasks: {
-          create: report.tasks.map(task => ({
+          create: report.tasks.map((task) => ({
             id: task.id,
             projectId: task.projectId,
             description: task.description,
             hoursSpent: task.hoursSpent,
-            progress: task.progress
-          }))
-        }
+            progress: task.progress,
+          })),
+        },
       },
-      include: { tasks: true }
+      include: { tasks: true },
     })
 
     return toDomainDailyReport(created, created.tasks)
@@ -110,7 +110,7 @@ export class PrismaDailyReportRepository implements DailyReportRepository {
     const updated = await this.prisma.$transaction(async (tx) => {
       // 既存タスクを削除
       await tx.task.deleteMany({
-        where: { dailyReportId: report.id }
+        where: { dailyReportId: report.id },
       })
 
       // 日報を更新し、新しいタスクを作成
@@ -128,16 +128,16 @@ export class PrismaDailyReportRepository implements DailyReportRepository {
           feedback: report.feedback || null,
           updatedAt: report.updatedAt,
           tasks: {
-            create: report.tasks.map(task => ({
+            create: report.tasks.map((task) => ({
               id: task.id,
               projectId: task.projectId,
               description: task.description,
               hoursSpent: task.hoursSpent,
-              progress: task.progress
-            }))
-          }
+              progress: task.progress,
+            })),
+          },
         },
-        include: { tasks: true }
+        include: { tasks: true },
       })
     })
 
@@ -172,23 +172,23 @@ export class PrismaDailyReportRepository implements DailyReportRepository {
     if (criteria.projectId) {
       where.tasks = {
         some: {
-          projectId: criteria.projectId
-        }
+          projectId: criteria.projectId,
+        },
       }
     }
 
     const reports = await this.prisma.dailyReport.findMany({
       where,
       include: { tasks: true },
-      orderBy: { date: 'desc' }
+      orderBy: { date: 'desc' },
     })
 
-    return reports.map(report => toDomainDailyReport(report, report.tasks))
+    return reports.map((report) => toDomainDailyReport(report, report.tasks))
   }
 
   async calculateSummary(
-    userId: string, 
-    dateFrom: Date, 
+    userId: string,
+    dateFrom: Date,
     dateTo: Date
   ): Promise<DailyReportSummary> {
     const reports = await this.prisma.dailyReport.findMany({
@@ -196,10 +196,10 @@ export class PrismaDailyReportRepository implements DailyReportRepository {
         userId,
         date: {
           gte: dateFrom,
-          lte: dateTo
-        }
+          lte: dateTo,
+        },
       },
-      include: { tasks: true }
+      include: { tasks: true },
     })
 
     // 集計処理
@@ -230,7 +230,7 @@ export class PrismaDailyReportRepository implements DailyReportRepository {
       // タスクの集計
       for (const task of report.tasks) {
         totalHours += task.hoursSpent
-        
+
         if (!projectHours[task.projectId]) {
           projectHours[task.projectId] = 0
         }
@@ -248,7 +248,7 @@ export class PrismaDailyReportRepository implements DailyReportRepository {
       submittedCount,
       approvedCount,
       rejectedCount,
-      draftCount
+      draftCount,
     }
   }
 }

@@ -1,10 +1,10 @@
-"use client"
+'use client'
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { DailyReportForm } from "@/components/daily-report/daily-report-form"
-import { apiClient } from "@/lib/api-client"
-import type { DailyReport } from "@/types/daily-report"
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { DailyReportForm } from '@/components/daily-report/daily-report-form'
+import { apiClient } from '@/lib/api-client'
+import type { DailyReport } from '@/types/daily-report'
 
 export default function EditDailyReportPage({
   params,
@@ -29,7 +29,7 @@ export default function EditDailyReportPage({
       }
       setReport(data)
     } catch (err: any) {
-      setError(err.response?.data?.message || "日報の取得に失敗しました")
+      setError(err.response?.data?.message || '日報の取得に失敗しました')
     } finally {
       setIsLoading(false)
     }
@@ -46,7 +46,7 @@ export default function EditDailyReportPage({
   if (error || !report) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-destructive">{error || "日報が見つかりません"}</div>
+        <div className="text-destructive">{error || '日報が見つかりません'}</div>
       </div>
     )
   }
@@ -55,9 +55,7 @@ export default function EditDailyReportPage({
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold tracking-tight">日報編集</h2>
-        <p className="text-muted-foreground">
-          日報の内容を編集してください
-        </p>
+        <p className="text-muted-foreground">日報の内容を編集してください</p>
       </div>
       <DailyReportForm initialData={report} />
     </div>

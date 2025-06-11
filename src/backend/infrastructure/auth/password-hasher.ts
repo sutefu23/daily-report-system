@@ -5,7 +5,7 @@ import type { PasswordHasher } from '../../domain/workflows/user-workflow'
 export class BcryptPasswordHasher implements PasswordHasher {
   private readonly saltRounds: number
 
-  constructor(saltRounds: number = 10) {
+  constructor(saltRounds = 10) {
     this.saltRounds = saltRounds
   }
 

@@ -1,36 +1,36 @@
-"use client"
+'use client'
 
-import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
-import { FileText, Users, Home, LogOut, User, BarChart3 } from "lucide-react"
-import { Button } from "@/components/shadcn/ui/button"
-import { useAuthStore } from "@/lib/auth"
-import { cn } from "@/lib/utils"
+import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
+import { FileText, Users, Home, LogOut, User, BarChart3 } from 'lucide-react'
+import { Button } from '@/components/shadcn/ui/button'
+import { useAuthStore } from '@/lib/auth'
+import { cn } from '@/lib/utils'
 
 const navigationItems = [
   {
-    title: "ダッシュボード",
-    href: "/dashboard",
+    title: 'ダッシュボード',
+    href: '/dashboard',
     icon: Home,
-    roles: ["admin", "manager", "employee"],
+    roles: ['admin', 'manager', 'employee'],
   },
   {
-    title: "日報",
-    href: "/dashboard/daily-reports",
+    title: '日報',
+    href: '/dashboard/daily-reports',
     icon: FileText,
-    roles: ["admin", "manager", "employee"],
+    roles: ['admin', 'manager', 'employee'],
   },
   {
-    title: "レポート",
-    href: "/dashboard/reports",
+    title: 'レポート',
+    href: '/dashboard/reports',
     icon: BarChart3,
-    roles: ["admin", "manager"],
+    roles: ['admin', 'manager'],
   },
   {
-    title: "ユーザー管理",
-    href: "/dashboard/users",
+    title: 'ユーザー管理',
+    href: '/dashboard/users',
     icon: Users,
-    roles: ["admin"],
+    roles: ['admin'],
   },
 ]
 
@@ -41,12 +41,10 @@ export function Navigation() {
 
   const handleLogout = () => {
     logout()
-    router.push("/login")
+    router.push('/login')
   }
 
-  const filteredItems = navigationItems.filter(
-    (item) => user && item.roles.includes(user.role)
-  )
+  const filteredItems = navigationItems.filter((item) => user && item.roles.includes(user.role))
 
   return (
     <nav className="flex flex-col h-full bg-gray-900 text-white w-64">
@@ -59,16 +57,16 @@ export function Navigation() {
           {filteredItems.map((item) => {
             const Icon = item.icon
             const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
-            
+
             return (
               <li key={item.href}>
                 <Link
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                    'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                     isActive
-                      ? "bg-gray-800 text-white"
-                      : "text-gray-300 hover:bg-gray-800 hover:text-white"
+                      ? 'bg-gray-800 text-white'
+                      : 'text-gray-300 hover:bg-gray-800 hover:text-white'
                   )}
                 >
                   <Icon className="h-4 w-4" />

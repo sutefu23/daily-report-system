@@ -13,12 +13,12 @@ const updateUserSchema = z.object({
   role: z.enum(['admin', 'manager', 'employee']).optional(),
   departmentId: z.string().optional(),
   managerId: z.string().optional().nullable(),
-  isActive: z.boolean().optional()
+  isActive: z.boolean().optional(),
 })
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1),
-  newPassword: z.string().min(8)
+  newPassword: z.string().min(8),
 })
 
 const searchUsersSchema = z.object({
@@ -27,14 +27,11 @@ const searchUsersSchema = z.object({
   role: z.enum(['admin', 'manager', 'employee']).optional(),
   departmentId: z.string().optional(),
   managerId: z.string().optional(),
-  isActive: z.boolean().optional()
+  isActive: z.boolean().optional(),
 })
 
 export const createUserRoutes = (userService: UserService) => {
   const app = new Hono<{ Variables: AuthVariables }>()
-
-  // 認証が必要なエンドポイントには認証ミドルウェアを適用
-  // ※実際の実装では tokenGenerator を注入する必要があります
 
   // 現在のユーザー情報取得
   app.get('/me', async (c) => {
@@ -43,10 +40,7 @@ export const createUserRoutes = (userService: UserService) => {
 
     if (!isRight(result)) {
       const error = result.left
-      return c.json(
-        toErrorResponse(error),
-        domainErrorToHttpStatus(error)
-      )
+      return c.json(toErrorResponse(error), domainErrorToHttpStatus(error))
     }
 
     const userData = result.right
@@ -59,8 +53,8 @@ export const createUserRoutes = (userService: UserService) => {
         departmentId: userData.departmentId,
         managerId: userData.managerId,
         isActive: userData.isActive,
-        slackUserId: userData.slackUserId
-      }
+        slackUserId: userData.slackUserId,
+      },
     })
   })
 
@@ -74,15 +68,12 @@ export const createUserRoutes = (userService: UserService) => {
 
     const result = await userService.updateUser({
       id: user.userId,
-      ...allowedUpdates
+      ...allowedUpdates,
     })
 
     if (!isRight(result)) {
       const error = result.left
-      return c.json(
-        toErrorResponse(error),
-        domainErrorToHttpStatus(error)
-      )
+      return c.json(toErrorResponse(error), domainErrorToHttpStatus(error))
     }
 
     const updatedUser = result.right
@@ -95,8 +86,8 @@ export const createUserRoutes = (userService: UserService) => {
         departmentId: updatedUser.departmentId,
         managerId: updatedUser.managerId,
         isActive: updatedUser.isActive,
-        slackUserId: updatedUser.slackUserId
-      }
+        slackUserId: updatedUser.slackUserId,
+      },
     })
   })
 
@@ -108,15 +99,12 @@ export const createUserRoutes = (userService: UserService) => {
     const result = await userService.changePassword({
       userId: user.userId,
       currentPassword,
-      newPassword
+      newPassword,
     })
 
     if (!isRight(result)) {
       const error = result.left
-      return c.json(
-        toErrorResponse(error),
-        domainErrorToHttpStatus(error)
-      )
+      return c.json(toErrorResponse(error), domainErrorToHttpStatus(error))
     }
 
     return c.json({ message: 'Password changed successfully' })
@@ -128,7 +116,7 @@ export const createUserRoutes = (userService: UserService) => {
     const users = await userService.searchUsers(criteria)
 
     return c.json({
-      users: users.map(user => ({
+      users: users.map((user) => ({
         id: user.id,
         email: user.email,
         name: user.name,
@@ -136,8 +124,8 @@ export const createUserRoutes = (userService: UserService) => {
         departmentId: user.departmentId,
         managerId: user.managerId,
         isActive: user.isActive,
-        slackUserId: user.slackUserId
-      }))
+        slackUserId: user.slackUserId,
+      })),
     })
   })
 
@@ -148,10 +136,7 @@ export const createUserRoutes = (userService: UserService) => {
 
     if (!isRight(result)) {
       const error = result.left
-      return c.json(
-        toErrorResponse(error),
-        domainErrorToHttpStatus(error)
-      )
+      return c.json(toErrorResponse(error), domainErrorToHttpStatus(error))
     }
 
     const userData = result.right
@@ -164,8 +149,8 @@ export const createUserRoutes = (userService: UserService) => {
         departmentId: userData.departmentId,
         managerId: userData.managerId,
         isActive: userData.isActive,
-        slackUserId: userData.slackUserId
-      }
+        slackUserId: userData.slackUserId,
+      },
     })
   })
 
@@ -176,15 +161,12 @@ export const createUserRoutes = (userService: UserService) => {
 
     const result = await userService.updateUser({
       id: userId,
-      ...input
+      ...input,
     })
 
     if (!isRight(result)) {
       const error = result.left
-      return c.json(
-        toErrorResponse(error),
-        domainErrorToHttpStatus(error)
-      )
+      return c.json(toErrorResponse(error), domainErrorToHttpStatus(error))
     }
 
     const updatedUser = result.right
@@ -197,8 +179,8 @@ export const createUserRoutes = (userService: UserService) => {
         departmentId: updatedUser.departmentId,
         managerId: updatedUser.managerId,
         isActive: updatedUser.isActive,
-        slackUserId: updatedUser.slackUserId
-      }
+        slackUserId: updatedUser.slackUserId,
+      },
     })
   })
 
@@ -214,22 +196,19 @@ export const createUserRoutes = (userService: UserService) => {
 
     if (!isRight(result)) {
       const error = result.left
-      return c.json(
-        toErrorResponse(error),
-        domainErrorToHttpStatus(error)
-      )
+      return c.json(toErrorResponse(error), domainErrorToHttpStatus(error))
     }
 
     const subordinates = result.right
     return c.json({
-      users: subordinates.map(sub => ({
+      users: subordinates.map((sub) => ({
         id: sub.id,
         email: sub.email,
         name: sub.name,
         role: sub.role,
         departmentId: sub.departmentId,
-        isActive: sub.isActive
-      }))
+        isActive: sub.isActive,
+      })),
     })
   })
 

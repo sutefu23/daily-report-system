@@ -15,7 +15,7 @@ const toDomainProject = (prismaProject: any): Project => {
     endDate: prismaProject.endDate || undefined,
     isActive: prismaProject.isActive,
     createdAt: prismaProject.createdAt,
-    updatedAt: prismaProject.updatedAt
+    updatedAt: prismaProject.updatedAt,
   }
 }
 
@@ -24,7 +24,7 @@ export class PrismaProjectRepository implements ProjectRepository {
 
   async findById(id: string): Promise<Project | null> {
     const project = await this.prisma.project.findUnique({
-      where: { id }
+      where: { id },
     })
     return project ? toDomainProject(project) : null
   }
@@ -32,8 +32,8 @@ export class PrismaProjectRepository implements ProjectRepository {
   async findByIds(ids: string[]): Promise<Project[]> {
     const projects = await this.prisma.project.findMany({
       where: {
-        id: { in: ids }
-      }
+        id: { in: ids },
+      },
     })
     return projects.map(toDomainProject)
   }

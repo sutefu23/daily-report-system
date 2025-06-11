@@ -1,17 +1,24 @@
-"use client"
+'use client'
 
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import { Button } from "@/components/shadcn/ui/button"
-import { Input } from "@/components/shadcn/ui/input"
-import { Label } from "@/components/shadcn/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/shadcn/ui/card"
-import { apiClient } from "@/lib/api-client"
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
+import { Button } from '@/components/shadcn/ui/button'
+import { Input } from '@/components/shadcn/ui/input'
+import { Label } from '@/components/shadcn/ui/label'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/shadcn/ui/card'
+import { apiClient } from '@/lib/api-client'
 
 const forgotPasswordSchema = z.object({
-  email: z.string().email("有効なメールアドレスを入力してください"),
+  email: z.string().email('有効なメールアドレスを入力してください'),
 })
 
 type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>
@@ -34,10 +41,10 @@ export function ForgotPasswordForm() {
     setError(null)
 
     try {
-      await apiClient.post("/auth/forgot-password", data)
+      await apiClient.post('/auth/forgot-password', data)
       setIsSubmitted(true)
     } catch (err: any) {
-      setError(err.response?.data?.message || "リクエストの処理に失敗しました")
+      setError(err.response?.data?.message || 'リクエストの処理に失敗しました')
     } finally {
       setIsLoading(false)
     }
@@ -56,10 +63,7 @@ export function ForgotPasswordForm() {
           </p>
         </CardContent>
         <CardFooter>
-          <a
-            href="/login"
-            className="text-primary hover:underline text-sm"
-          >
+          <a href="/login" className="text-primary hover:underline text-sm">
             ログインページに戻る
           </a>
         </CardFooter>
@@ -78,35 +82,24 @@ export function ForgotPasswordForm() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {error && (
-            <div className="text-sm text-destructive">{error}</div>
-          )}
+          {error && <div className="text-sm text-destructive">{error}</div>}
           <div className="space-y-2">
             <Label htmlFor="email">メールアドレス</Label>
             <Input
               id="email"
               type="email"
               placeholder="email@example.com"
-              {...register("email")}
+              {...register('email')}
               disabled={isLoading}
             />
-            {errors.email && (
-              <p className="text-sm text-destructive">{errors.email.message}</p>
-            )}
+            {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
           </div>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={isLoading}
-          >
-            {isLoading ? "送信中..." : "リセットメールを送信"}
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? '送信中...' : 'リセットメールを送信'}
           </Button>
-          <a
-            href="/login"
-            className="text-primary hover:underline text-sm"
-          >
+          <a href="/login" className="text-primary hover:underline text-sm">
             ログインページに戻る
           </a>
         </CardFooter>

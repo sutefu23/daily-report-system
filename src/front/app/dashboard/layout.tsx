@@ -1,9 +1,9 @@
-"use client"
+'use client'
 
-import { useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { Navigation } from "@/components/layout/navigation"
-import { useAuthStore } from "@/lib/auth"
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { Navigation } from '@/components/layout/navigation'
+import { useAuthStore } from '@/lib/auth'
 
 export default function DashboardLayout({
   children,
@@ -15,7 +15,7 @@ export default function DashboardLayout({
 
   useEffect(() => {
     if (!isAuthenticated) {
-      router.push("/login")
+      router.push('/login')
     }
   }, [isAuthenticated, router])
 
@@ -27,9 +27,7 @@ export default function DashboardLayout({
     <div className="flex h-screen bg-gray-50">
       <Navigation />
       <main className="flex-1 overflow-y-auto">
-        <div className="container mx-auto p-6">
-          {children}
-        </div>
+        <div className="container mx-auto p-6">{children}</div>
       </main>
     </div>
   )

@@ -1,7 +1,7 @@
 // ドメインエラー定義
 
 // エラータイプ
-export type DomainErrorType = 
+export type DomainErrorType =
   | 'NOT_FOUND'
   | 'ALREADY_EXISTS'
   | 'VALIDATION_ERROR'
@@ -21,43 +21,43 @@ export type DomainError = {
 export const notFound = (message: string, details?: unknown): DomainError => ({
   type: 'NOT_FOUND',
   message,
-  details
+  details,
 })
 
 export const alreadyExists = (message: string, details?: unknown): DomainError => ({
   type: 'ALREADY_EXISTS',
   message,
-  details
+  details,
 })
 
 export const validationError = (message: string, details?: unknown): DomainError => ({
   type: 'VALIDATION_ERROR',
   message,
-  details
+  details,
 })
 
 export const unauthorized = (message: string, details?: unknown): DomainError => ({
   type: 'UNAUTHORIZED',
   message,
-  details
+  details,
 })
 
 export const forbidden = (message: string, details?: unknown): DomainError => ({
   type: 'FORBIDDEN',
   message,
-  details
+  details,
 })
 
 export const businessRuleViolation = (message: string, details?: unknown): DomainError => ({
   type: 'BUSINESS_RULE_VIOLATION',
   message,
-  details
+  details,
 })
 
 export const externalServiceError = (message: string, details?: unknown): DomainError => ({
   type: 'EXTERNAL_SERVICE_ERROR',
   message,
-  details
+  details,
 })
 
 // HTTPステータスコードへのマッピング
@@ -96,6 +96,6 @@ export const toErrorResponse = (error: DomainError): ErrorResponse => ({
   error: {
     type: error.type,
     message: error.message,
-    details: error.details
-  }
+    details: error.details,
+  },
 })

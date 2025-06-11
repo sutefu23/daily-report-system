@@ -1,4 +1,4 @@
-import { DailyReportDetail } from "@/components/daily-report/daily-report-detail"
+import { DailyReportDetail } from '@/components/daily-report/daily-report-detail'
 
 export default function DailyReportDetailPage({
   params,

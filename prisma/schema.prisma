@@ -14,6 +14,7 @@ datasource db {
 model User {
   id           String   @id @default(cuid()) @db.VarChar(26)
   email        String   @unique @db.VarChar(100)
+  username     String   @unique @db.VarChar(50)
   passwordHash String   @map("password_hash") @db.VarChar(255)
   name         String   @db.VarChar(100)
   role         String   @db.VarChar(20) // admin, manager, employee
@@ -35,6 +36,7 @@ model User {
   rejectedReports DailyReport[] @relation("RejectedReports")
 
   @@index([email])
+  @@index([username])
   @@index([managerId])
   @@index([departmentId])
   @@map("users")
@@ -62,7 +64,7 @@ model Project {
   name         String        @db.VarChar(200)
   description  String?       @db.Text
   departmentId String        @map("department_id") @db.VarChar(26)
-  status       ProjectStatus @default(PLANNING)
+  status       String        @db.VarChar(20) // planning, active, completed, suspended, cancelled
   startDate    DateTime      @map("start_date") @db.Date
   endDate      DateTime?     @map("end_date") @db.Date
   isActive     Boolean       @default(true) @map("is_active")
@@ -85,9 +87,9 @@ model DailyReport {
   id           String              @id @default(cuid()) @db.VarChar(26)
   userId       String              @map("user_id") @db.VarChar(26)
   date         DateTime            @db.Date
-  challenges   String?             @db.Text
-  nextDayPlan  String?             @map("next_day_plan") @db.Text
-  status       DailyReportStatus   @default(DRAFT)
+  challenges   String              @db.Text
+  nextDayPlan  String              @map("next_day_plan") @db.Text
+  status       String              @db.VarChar(20) // draft, submitted, approved, rejected
   submittedAt  DateTime?           @map("submitted_at")
   approvedAt   DateTime?           @map("approved_at")
   approvedBy   String?             @map("approved_by") @db.VarChar(26)
@@ -154,7 +156,7 @@ model Comment {
 model Notification {
   id                String             @id @default(cuid()) @db.VarChar(26)
   userId            String             @map("user_id") @db.VarChar(26)
-  type              NotificationType
+  type              String             @db.VarChar(50) // report_submitted, report_approved, report_rejected, comment_added
   title             String             @db.VarChar(200)
   message           String             @db.Text
   relatedEntityId   String?            @map("related_entity_id") @db.VarChar(26)
@@ -173,31 +175,3 @@ model Notification {
   @@map("notifications")
 }
 
-// Enums
-enum UserRole {
-  ADMIN
-  MANAGER
-  EMPLOYEE
-}
-
-enum ProjectStatus {
-  PLANNING
-  ACTIVE
-  COMPLETED
-  SUSPENDED
-  CANCELLED
-}
-
-enum DailyReportStatus {
-  DRAFT
-  SUBMITTED
-  APPROVED
-  REJECTED
-}
-
-enum NotificationType {
-  REPORT_SUBMITTED
-  REPORT_APPROVED
-  REPORT_REJECTED
-  COMMENT_ADDED
-}

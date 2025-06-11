@@ -12,7 +12,7 @@ const toDomainComment = (prismaComment: any): Comment => {
     content: prismaComment.content,
     isRead: prismaComment.isRead,
     createdAt: prismaComment.createdAt,
-    updatedAt: prismaComment.updatedAt
+    updatedAt: prismaComment.updatedAt,
   }
 }
 
@@ -21,7 +21,7 @@ export class PrismaCommentRepository implements CommentRepository {
 
   async findById(id: string): Promise<Comment | null> {
     const comment = await this.prisma.comment.findUnique({
-      where: { id }
+      where: { id },
     })
     return comment ? toDomainComment(comment) : null
   }
@@ -29,7 +29,7 @@ export class PrismaCommentRepository implements CommentRepository {
   async findByDailyReportId(dailyReportId: string): Promise<Comment[]> {
     const comments = await this.prisma.comment.findMany({
       where: { dailyReportId },
-      orderBy: { createdAt: 'asc' }
+      orderBy: { createdAt: 'asc' },
     })
     return comments.map(toDomainComment)
   }
@@ -43,8 +43,8 @@ export class PrismaCommentRepository implements CommentRepository {
         content: comment.content,
         isRead: comment.isRead,
         createdAt: comment.createdAt,
-        updatedAt: comment.updatedAt
-      }
+        updatedAt: comment.updatedAt,
+      },
     })
     return toDomainComment(created)
   }
@@ -54,8 +54,8 @@ export class PrismaCommentRepository implements CommentRepository {
       where: { id },
       data: {
         isRead: true,
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     })
     return toDomainComment(updated)
   }

@@ -11,41 +11,47 @@ const taskProgressSchema = z.object({
   projectId: z.string(),
   description: z.string().min(1),
   hoursSpent: z.number().min(0).max(24),
-  progress: z.number().min(0).max(100)
+  progress: z.number().min(0).max(100),
 })
 
 const createDailyReportSchema = z.object({
-  date: z.string().transform(str => new Date(str)),
+  date: z.string().transform((str) => new Date(str)),
   tasks: z.array(taskProgressSchema).min(1),
   challenges: z.string().min(1),
-  nextDayPlan: z.string().min(1)
+  nextDayPlan: z.string().min(1),
 })
 
 const updateDailyReportSchema = z.object({
   tasks: z.array(taskProgressSchema).min(1).optional(),
   challenges: z.string().min(1).optional(),
-  nextDayPlan: z.string().min(1).optional()
+  nextDayPlan: z.string().min(1).optional(),
 })
 
 const approveDailyReportSchema = z.object({
-  feedback: z.string().optional()
+  feedback: z.string().optional(),
 })
 
 const rejectDailyReportSchema = z.object({
-  feedback: z.string().min(1)
+  feedback: z.string().min(1),
 })
 
 const createCommentSchema = z.object({
-  content: z.string().min(1)
+  content: z.string().min(1),
 })
 
 const searchDailyReportsSchema = z.object({
   userId: z.string().optional(),
-  dateFrom: z.string().transform(str => new Date(str)).optional(),
-  dateTo: z.string().transform(str => new Date(str)).optional(),
+  dateFrom: z
+    .string()
+    .transform((str) => new Date(str))
+    .optional(),
+  dateTo: z
+    .string()
+    .transform((str) => new Date(str))
+    .optional(),
   status: z.enum(['draft', 'submitted', 'approved', 'rejected']).optional(),
   approverId: z.string().optional(),
-  projectId: z.string().optional()
+  projectId: z.string().optional(),
 })
 
 export const createDailyReportRoutes = (dailyReportService: DailyReportService) => {
@@ -58,15 +64,12 @@ export const createDailyReportRoutes = (dailyReportService: DailyReportService) 
 
     const result = await dailyReportService.createDailyReport({
       userId: createUserId(user.userId),
-      ...input
+      ...input,
     })
 
     if (!isRight(result)) {
       const error = result.left
-      return c.json(
-        toErrorResponse(error),
-        domainErrorToHttpStatus(error)
-      )
+      return c.json(toErrorResponse(error), domainErrorToHttpStatus(error))
     }
 
     return c.json({ dailyReport: result.right }, 201)
@@ -77,17 +80,11 @@ export const createDailyReportRoutes = (dailyReportService: DailyReportService) 
     const user = c.get('user')
     const criteria = c.req.valid('query')
 
-    const result = await dailyReportService.searchDailyReports(
-      createUserId(user.userId),
-      criteria
-    )
+    const result = await dailyReportService.searchDailyReports(createUserId(user.userId), criteria)
 
     if (!isRight(result)) {
       const error = result.left
-      return c.json(
-        toErrorResponse(error),
-        domainErrorToHttpStatus(error)
-      )
+      return c.json(toErrorResponse(error), domainErrorToHttpStatus(error))
     }
 
     return c.json({ dailyReports: result.right })
@@ -120,15 +117,12 @@ export const createDailyReportRoutes = (dailyReportService: DailyReportService) 
     const result = await dailyReportService.updateDailyReport({
       id: createUserId(reportId),
       userId: createUserId(user.userId),
-      ...input
+      ...input,
     })
 
     if (!isRight(result)) {
       const error = result.left
-      return c.json(
-        toErrorResponse(error),
-        domainErrorToHttpStatus(error)
-      )
+      return c.json(toErrorResponse(error), domainErrorToHttpStatus(error))
     }
 
     return c.json({ dailyReport: result.right })
@@ -141,65 +135,66 @@ export const createDailyReportRoutes = (dailyReportService: DailyReportService) 
 
     const result = await dailyReportService.submitDailyReport({
       id: createUserId(reportId),
-      userId: createUserId(user.userId)
+      userId: createUserId(user.userId),
     })
 
     if (!isRight(result)) {
       const error = result.left
-      return c.json(
-        toErrorResponse(error),
-        domainErrorToHttpStatus(error)
-      )
+      return c.json(toErrorResponse(error), domainErrorToHttpStatus(error))
     }
 
     return c.json({ dailyReport: result.right })
   })
 
   // 日報承認（マネージャー以上）
-  app.post('/:id/approve', requireManager(), zValidator('json', approveDailyReportSchema), async (c) => {
-    const user = c.get('user')
-    const reportId = c.req.param('id')
-    const { feedback } = c.req.valid('json')
+  app.post(
+    '/:id/approve',
+    requireManager(),
+    zValidator('json', approveDailyReportSchema),
+    async (c) => {
+      const user = c.get('user')
+      const reportId = c.req.param('id')
+      const { feedback } = c.req.valid('json')
 
-    const result = await dailyReportService.approveDailyReport({
-      id: createUserId(reportId),
-      approverId: createUserId(user.userId),
-      feedback
-    })
+      const result = await dailyReportService.approveDailyReport({
+        id: createUserId(reportId),
+        approverId: createUserId(user.userId),
+        feedback,
+      })
 
-    if (!isRight(result)) {
-      const error = result.left
-      return c.json(
-        toErrorResponse(error),
-        domainErrorToHttpStatus(error)
-      )
+      if (!isRight(result)) {
+        const error = result.left
+        return c.json(toErrorResponse(error), domainErrorToHttpStatus(error))
+      }
+
+      return c.json({ dailyReport: result.right })
     }
-
-    return c.json({ dailyReport: result.right })
-  })
+  )
 
   // 日報差し戻し（マネージャー以上）
-  app.post('/:id/reject', requireManager(), zValidator('json', rejectDailyReportSchema), async (c) => {
-    const user = c.get('user')
-    const reportId = c.req.param('id')
-    const { feedback } = c.req.valid('json')
+  app.post(
+    '/:id/reject',
+    requireManager(),
+    zValidator('json', rejectDailyReportSchema),
+    async (c) => {
+      const user = c.get('user')
+      const reportId = c.req.param('id')
+      const { feedback } = c.req.valid('json')
 
-    const result = await dailyReportService.rejectDailyReport({
-      id: createUserId(reportId),
-      rejectorId: createUserId(user.userId),
-      feedback
-    })
+      const result = await dailyReportService.rejectDailyReport({
+        id: createUserId(reportId),
+        rejectorId: createUserId(user.userId),
+        feedback,
+      })
 
-    if (!isRight(result)) {
-      const error = result.left
-      return c.json(
-        toErrorResponse(error),
-        domainErrorToHttpStatus(error)
-      )
+      if (!isRight(result)) {
+        const error = result.left
+        return c.json(toErrorResponse(error), domainErrorToHttpStatus(error))
+      }
+
+      return c.json({ dailyReport: result.right })
     }
-
-    return c.json({ dailyReport: result.right })
-  })
+  )
 
   // コメント一覧取得
   app.get('/:id/comments', async (c) => {
@@ -229,15 +224,12 @@ export const createDailyReportRoutes = (dailyReportService: DailyReportService) 
     const result = await dailyReportService.createComment({
       dailyReportId: createUserId(reportId),
       userId: createUserId(user.userId),
-      content
+      content,
     })
 
     if (!isRight(result)) {
       const error = result.left
-      return c.json(
-        toErrorResponse(error),
-        domainErrorToHttpStatus(error)
-      )
+      return c.json(toErrorResponse(error), domainErrorToHttpStatus(error))
     }
 
     return c.json({ comment: result.right }, 201)
@@ -269,10 +261,7 @@ export const createDailyReportRoutes = (dailyReportService: DailyReportService) 
 
     if (!isRight(result)) {
       const error = result.left
-      return c.json(
-        toErrorResponse(error),
-        domainErrorToHttpStatus(error)
-      )
+      return c.json(toErrorResponse(error), domainErrorToHttpStatus(error))
     }
 
     return c.json({ summary: result.right })

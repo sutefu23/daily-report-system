@@ -15,7 +15,7 @@ export class JwtTokenGenerator {
   private readonly secret: string
   private readonly expiresIn: string
 
-  constructor(secret: string, expiresIn: string = '7d') {
+  constructor(secret: string, expiresIn = '7d') {
     if (!secret) {
       throw new Error('JWT secret is required')
     }
@@ -28,11 +28,11 @@ export class JwtTokenGenerator {
     const payload: JwtPayload = {
       sub: user.id,
       email: user.email,
-      role: user.role
+      role: user.role,
     }
 
     return jwt.sign(payload, this.secret, {
-      expiresIn: this.expiresIn
+      expiresIn: this.expiresIn,
     })
   }
 
@@ -56,11 +56,11 @@ export class JwtTokenGenerator {
     const payload: JwtPayload = {
       sub: user.id,
       email: user.email,
-      role: user.role
+      role: user.role,
     }
 
     return jwt.sign(payload, this.secret, {
-      expiresIn: '30d'
+      expiresIn: '30d',
     })
   }
 }

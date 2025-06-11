@@ -1,4 +1,4 @@
-import { DailyReportList } from "@/components/daily-report/daily-report-list"
+import { DailyReportList } from '@/components/daily-report/daily-report-list'
 
 export default function DailyReportsPage() {
   return <DailyReportList />

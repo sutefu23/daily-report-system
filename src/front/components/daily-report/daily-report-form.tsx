@@ -1,34 +1,44 @@
-"use client"
+'use client'
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { useForm, useFieldArray } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import { format } from "date-fns"
-import { ja } from "date-fns/locale"
-import { Trash2, Plus } from "lucide-react"
-import { Button } from "@/components/shadcn/ui/button"
-import { Input } from "@/components/shadcn/ui/input"
-import { Label } from "@/components/shadcn/ui/label"
-import { Textarea } from "@/components/shadcn/ui/textarea"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/shadcn/ui/card"
-import { apiClient } from "@/lib/api-client"
-import type { CreateDailyReportInput, DailyReport } from "@/types/daily-report"
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useForm, useFieldArray } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
+import { format } from 'date-fns'
+import { ja } from 'date-fns/locale'
+import { Trash2, Plus } from 'lucide-react'
+import { Button } from '@/components/shadcn/ui/button'
+import { Input } from '@/components/shadcn/ui/input'
+import { Label } from '@/components/shadcn/ui/label'
+import { Textarea } from '@/components/shadcn/ui/textarea'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/shadcn/ui/card'
+import { apiClient } from '@/lib/api-client'
+import type { CreateDailyReportInput, DailyReport } from '@/types/daily-report'
 
 const taskSchema = z.object({
-  projectId: z.string().min(1, "プロジェクトを選択してください"),
+  projectId: z.string().min(1, 'プロジェクトを選択してください'),
   projectName: z.string().optional(),
-  description: z.string().min(1, "作業内容を入力してください"),
-  hoursSpent: z.number().min(0.5, "0.5時間以上を入力してください").max(24, "24時間以下を入力してください"),
-  progress: z.number().min(0, "0以上を入力してください").max(100, "100以下を入力してください"),
+  description: z.string().min(1, '作業内容を入力してください'),
+  hoursSpent: z
+    .number()
+    .min(0.5, '0.5時間以上を入力してください')
+    .max(24, '24時間以下を入力してください'),
+  progress: z.number().min(0, '0以上を入力してください').max(100, '100以下を入力してください'),
 })
 
 const dailyReportSchema = z.object({
   date: z.string(),
-  tasks: z.array(taskSchema).min(1, "少なくとも1つのタスクを入力してください"),
+  tasks: z.array(taskSchema).min(1, '少なくとも1つのタスクを入力してください'),
   challenges: z.string(),
-  nextDayPlan: z.string().min(1, "明日の予定を入力してください"),
+  nextDayPlan: z.string().min(1, '明日の予定を入力してください'),
 })
 
 type DailyReportFormData = z.infer<typeof dailyReportSchema>
@@ -51,31 +61,35 @@ export function DailyReportForm({ initialData, date = new Date() }: DailyReportF
     formState: { errors },
   } = useForm<DailyReportFormData>({
     resolver: zodResolver(dailyReportSchema),
-    defaultValues: initialData ? {
-      date: initialData.date,
-      tasks: initialData.tasks,
-      challenges: initialData.challenges,
-      nextDayPlan: initialData.nextDayPlan,
-    } : {
-      date: format(date, "yyyy-MM-dd"),
-      tasks: [{
-        projectId: "",
-        projectName: "",
-        description: "",
-        hoursSpent: 1,
-        progress: 0,
-      }],
-      challenges: "",
-      nextDayPlan: "",
-    },
+    defaultValues: initialData
+      ? {
+          date: initialData.date,
+          tasks: initialData.tasks,
+          challenges: initialData.challenges,
+          nextDayPlan: initialData.nextDayPlan,
+        }
+      : {
+          date: format(date, 'yyyy-MM-dd'),
+          tasks: [
+            {
+              projectId: '',
+              projectName: '',
+              description: '',
+              hoursSpent: 1,
+              progress: 0,
+            },
+          ],
+          challenges: '',
+          nextDayPlan: '',
+        },
   })
 
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "tasks",
+    name: 'tasks',
   })
 
-  const watchTasks = watch("tasks")
+  const watchTasks = watch('tasks')
   const totalHours = watchTasks?.reduce((sum, task) => sum + (task.hoursSpent || 0), 0) || 0
 
   const onSubmit = async (data: DailyReportFormData) => {
@@ -86,11 +100,11 @@ export function DailyReportForm({ initialData, date = new Date() }: DailyReportF
       if (initialData) {
         await apiClient.put(`/daily-reports/${initialData.id}`, data)
       } else {
-        await apiClient.post("/daily-reports", data)
+        await apiClient.post('/daily-reports', data)
       }
-      router.push("/dashboard/daily-reports")
+      router.push('/dashboard/daily-reports')
     } catch (err: any) {
-      setError(err.response?.data?.message || "保存に失敗しました")
+      setError(err.response?.data?.message || '保存に失敗しました')
     } finally {
       setIsLoading(false)
     }
@@ -105,11 +119,11 @@ export function DailyReportForm({ initialData, date = new Date() }: DailyReportF
       if (initialData) {
         await apiClient.put(`/daily-reports/${initialData.id}`, { ...data, status: 'draft' })
       } else {
-        await apiClient.post("/daily-reports", { ...data, status: 'draft' })
+        await apiClient.post('/daily-reports', { ...data, status: 'draft' })
       }
-      router.push("/dashboard/daily-reports")
+      router.push('/dashboard/daily-reports')
     } catch (err: any) {
-      setError(err.response?.data?.message || "下書き保存に失敗しました")
+      setError(err.response?.data?.message || '下書き保存に失敗しました')
     } finally {
       setIsLoading(false)
     }
@@ -120,11 +134,9 @@ export function DailyReportForm({ initialData, date = new Date() }: DailyReportF
       <form onSubmit={handleSubmit(onSubmit)}>
         <CardHeader>
           <CardTitle>
-            {format(new Date(watch("date")), "yyyy年MM月dd日（E）", { locale: ja })}の日報
+            {format(new Date(watch('date')), 'yyyy年MM月dd日（E）', { locale: ja })}の日報
           </CardTitle>
-          <CardDescription>
-            本日の作業内容を記録してください
-          </CardDescription>
+          <CardDescription>本日の作業内容を記録してください</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {error && (
@@ -134,9 +146,7 @@ export function DailyReportForm({ initialData, date = new Date() }: DailyReportF
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <Label>作業記録</Label>
-              <span className="text-sm text-muted-foreground">
-                合計作業時間: {totalHours}時間
-              </span>
+              <span className="text-sm text-muted-foreground">合計作業時間: {totalHours}時間</span>
             </div>
 
             {fields.map((field, index) => (
@@ -210,10 +220,18 @@ export function DailyReportForm({ initialData, date = new Date() }: DailyReportF
                 </div>
                 {errors.tasks?.[index] && (
                   <div className="text-sm text-destructive space-y-1">
-                    {errors.tasks[index]?.projectName && <p>{errors.tasks[index]?.projectName?.message}</p>}
-                    {errors.tasks[index]?.description && <p>{errors.tasks[index]?.description?.message}</p>}
-                    {errors.tasks[index]?.hoursSpent && <p>{errors.tasks[index]?.hoursSpent?.message}</p>}
-                    {errors.tasks[index]?.progress && <p>{errors.tasks[index]?.progress?.message}</p>}
+                    {errors.tasks[index]?.projectName && (
+                      <p>{errors.tasks[index]?.projectName?.message}</p>
+                    )}
+                    {errors.tasks[index]?.description && (
+                      <p>{errors.tasks[index]?.description?.message}</p>
+                    )}
+                    {errors.tasks[index]?.hoursSpent && (
+                      <p>{errors.tasks[index]?.hoursSpent?.message}</p>
+                    )}
+                    {errors.tasks[index]?.progress && (
+                      <p>{errors.tasks[index]?.progress?.message}</p>
+                    )}
                   </div>
                 )}
               </div>
@@ -222,13 +240,15 @@ export function DailyReportForm({ initialData, date = new Date() }: DailyReportF
             <Button
               type="button"
               variant="outline"
-              onClick={() => append({
-                projectId: "",
-                projectName: "",
-                description: "",
-                hoursSpent: 1,
-                progress: 0,
-              })}
+              onClick={() =>
+                append({
+                  projectId: '',
+                  projectName: '',
+                  description: '',
+                  hoursSpent: 1,
+                  progress: 0,
+                })
+              }
               disabled={isLoading}
               className="w-full"
             >
@@ -243,7 +263,7 @@ export function DailyReportForm({ initialData, date = new Date() }: DailyReportF
               id="challenges"
               placeholder="本日の業務で困ったことや、相談したいことがあれば記載してください"
               rows={4}
-              {...register("challenges")}
+              {...register('challenges')}
               disabled={isLoading}
             />
           </div>
@@ -254,7 +274,7 @@ export function DailyReportForm({ initialData, date = new Date() }: DailyReportF
               id="nextDayPlan"
               placeholder="明日予定している作業内容を記載してください"
               rows={4}
-              {...register("nextDayPlan")}
+              {...register('nextDayPlan')}
               disabled={isLoading}
             />
             {errors.nextDayPlan && (
@@ -272,19 +292,11 @@ export function DailyReportForm({ initialData, date = new Date() }: DailyReportF
             キャンセル
           </Button>
           <div className="space-x-2">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={onSaveDraft}
-              disabled={isLoading}
-            >
+            <Button type="button" variant="secondary" onClick={onSaveDraft} disabled={isLoading}>
               下書き保存
             </Button>
-            <Button
-              type="submit"
-              disabled={isLoading || totalHours > 24}
-            >
-              {isLoading ? "保存中..." : "提出"}
+            <Button type="submit" disabled={isLoading || totalHours > 24}>
+              {isLoading ? '保存中...' : '提出'}
             </Button>
           </div>
         </CardFooter>
