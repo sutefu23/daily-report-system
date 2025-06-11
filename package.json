@@ -1,0 +1,24 @@
+{
+  "name": "daily-report-system",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "src/front",
+    "src/backend"
+  ],
+  "scripts": {
+    "dev": "npm run dev:front",
+    "dev:front": "npm run dev --workspace=@daily-report/frontend",
+    "dev:backend": "npm run dev --workspace=@daily-report/backend",
+    "build": "npm run build:front && npm run build:backend",
+    "build:front": "npm run build --workspace=@daily-report/frontend",
+    "build:backend": "npm run build --workspace=@daily-report/backend",
+    "install:all": "npm install",
+    "db:setup": "npx prisma migrate dev",
+    "db:generate": "npx prisma generate"
+  },
+  "devDependencies": {
+    "@prisma/client": "^6.9.0",
+    "prisma": "^6.9.0"
+  }
+}
